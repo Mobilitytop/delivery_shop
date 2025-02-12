@@ -4,10 +4,10 @@ import {Provider} from 'react-redux';
 import {PaperProvider} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-import useApp from '../hooks/useApp';
 import {store} from '../store';
 
 import Router from './Router';
+import useApp from '../hooks/useApp';
 
 const App = () => {
   const {isDarkMode, theme} = useApp();

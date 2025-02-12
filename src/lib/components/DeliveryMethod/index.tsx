@@ -1,41 +1,28 @@
-import {StyleSheetProperties, Text, TouchableOpacity, View} from 'react-native';
+import React, {useMemo} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
+
+import {DeliveryMethodProps} from './types';
+import {deliveriesData} from './data';
 import defaultStyles from './styles';
-import {useState} from 'react';
+import useApp from '../../hooks/useApp';
 
-type DeliveryProps = {
-  config: {};
-  styles?: {
-    container: StyleSheetProperties;
-    item: StyleSheetProperties;
-    itemInner: StyleSheetProperties;
-    checkbox: StyleSheetProperties;
-    checkboxActive: StyleSheetProperties;
-    itemContainer: StyleSheetProperties;
-    title: StyleSheetProperties;
-    description: StyleSheetProperties;
-  };
-};
+const DeliveryMethod: React.FC<DeliveryMethodProps> = ({
+  styles,
+  onSelectDeliveryMethod: onPress,
+  activeDeliveryMethod: active,
+  deliveryMethods,
+}) => {
+  const {isDarkMode} = useApp();
 
-const deliveries = [
-  {
-    id: 1,
-    title: 'Доставка курьером по Москве внутри МКАД?',
-    description: '2 500 руб.',
-  },
-  {id: 2, title: 'СДЭК-экспресс (Экспресс до двери)'},
-  {id: 3, title: 'СДЭК-экспресс (Экспресс до пункта выдачи)'},
-  {
-    id: 4,
-    title: 'Почта России (Доставка в отделение)',
-    description: 'Самовывоз из отделения Почты России',
-  },
-];
+  const deliveries = useMemo(() => {
+    if (deliveryMethods?.length) {
+      return deliveriesData?.filter(el =>
+        deliveryMethods.some(el2 => el.id === el2),
+      );
+    }
 
-const Delivery: React.FC<DeliveryProps> = ({config, styles}) => {
-  const [active, setActive] = useState(0);
-  const onPress = (id: number) => {
-    setActive(id);
-  };
+    return deliveriesData;
+  }, [deliveryMethods]);
 
   return (
     <View style={{...defaultStyles.container, ...styles?.container}}>
@@ -60,6 +47,7 @@ const Delivery: React.FC<DeliveryProps> = ({config, styles}) => {
               }}>
               <Text
                 style={{
+                  color: isDarkMode ? '#fff' : '#000',
                   ...defaultStyles.title,
                   ...styles?.title,
                 }}>
@@ -68,6 +56,7 @@ const Delivery: React.FC<DeliveryProps> = ({config, styles}) => {
               {el.description && (
                 <Text
                   style={{
+                    color: isDarkMode ? '#fff' : '#000',
                     ...defaultStyles.description,
                     ...styles?.description,
                   }}>
@@ -97,4 +86,4 @@ const Delivery: React.FC<DeliveryProps> = ({config, styles}) => {
   );
 };
 
-export default Delivery;
+export default DeliveryMethod;

@@ -1,10 +1,13 @@
 import React from 'react';
-import {Text} from 'react-native-paper';
-import {View} from 'react-native';
-import Delivery from '../../components/Delivery';
+import Delivery from '../../lib/components/Delivery';
+import {ScrollView} from 'react-native';
 
 const HomeScreen = () => {
-  return <Delivery config={{}} />;
+  return (
+    <ScrollView>
+      <Delivery deliveryMethods={[]} />
+    </ScrollView>
+  );
 };
 
 export default HomeScreen;
