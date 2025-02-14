@@ -14,10 +14,8 @@ export type DeliveryMethodStyle = {
 export type DeliveryMethodProps = {
   deliveryMethods?: DeliveryMethodId[];
   styles?: DeliveryMethodStyle;
-  onSelectDeliveryMethod: (
-    activeDeliveryMethod: DeliveryMethodId | null,
-  ) => void;
-  activeDeliveryMethod: DeliveryMethodId | null;
+  onSelectDeliveryMethod: (activeDeliveryMethod: DeliveryMethodId) => void;
+  activeDeliveryMethod: DeliveryMethodId;
 };
 
 export enum DeliveryMethodId {

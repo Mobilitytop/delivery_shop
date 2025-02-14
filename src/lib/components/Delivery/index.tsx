@@ -2,27 +2,68 @@ import React, {useState} from 'react';
 import {StyleSheetProperties, Text, View, ViewStyle} from 'react-native';
 import defaultStyles from './styles';
 import DeliveryMethod from '../DeliveryMethod';
+import CurrentDeliveryMethod from '../CurrentDeliveryMethod';
 import {DeliveryMethodId, DeliveryMethodStyle} from '../DeliveryMethod/types';
 import useApp from '../../hooks/useApp';
 import DeliveryForms from '../DeliveryForms';
+import {DeliveryFormData, DeliveryFormsStyles} from '../DeliveryForms/types';
+import {fetchPostTariff} from '../../api/post';
+import {PostTariffRequest} from '../../api/post/models';
+import {CurrentDeliveryMethodStyle} from '../CurrentDeliveryMethod/types';
 
 type DeliveryConfig = {
+  postConfig: {
+    accessToken: string;
+    basicToken: string;
+    request: PostTariffRequest;
+  };
   deliveryMethods?: DeliveryMethodId[];
   styles?: {
     container?: ViewStyle;
     title?: StyleSheetProperties;
     deliveryMethod?: DeliveryMethodStyle;
+    deliveryForms?: DeliveryFormsStyles;
+    currentDeliveryMethod?: CurrentDeliveryMethodStyle;
   };
 };
 
-const Delivery: React.FC<DeliveryConfig> = ({styles}) => {
+const initialFormData: DeliveryFormData = {
+  address: '',
+  index: '',
+  comment: '',
+};
+
+const Delivery: React.FC<DeliveryConfig> = ({styles, postConfig}) => {
   const {isDarkMode} = useApp();
+  const [edit, setEdit] = useState(true);
+  const [rate, setRate] = useState(0);
+  const [formData, setFormData] = useState(initialFormData);
 
   const [activeDeliveryMethod, setActiveDeliveryMethod] =
-    useState<DeliveryMethodId | null>(null);
+    useState<DeliveryMethodId>(DeliveryMethodId.COURIER);
 
-  const onSelectDeliveryMethod = (id: DeliveryMethodId | null) => {
+  const onSelectDeliveryMethod = (id: DeliveryMethodId) => {
     setActiveDeliveryMethod(id);
+    setRate(0);
+    onChangeFormData(initialFormData);
+  };
+
+  const onChangeFormData = (value: DeliveryFormData) => {
+    setFormData(prev => ({...prev, ...value}));
+  };
+
+  const onSave = async () => {
+    setEdit(false);
+
+    if (activeDeliveryMethod === DeliveryMethodId.POST) {
+      const data = await fetchPostTariff({
+        accessToken: postConfig.accessToken,
+        basicToken: postConfig.basicToken,
+        body: postConfig.request,
+      });
+
+      setRate(data?.['total-rate']);
+    }
   };
 
   return (
@@ -35,11 +76,32 @@ const Delivery: React.FC<DeliveryConfig> = ({styles}) => {
         }}>
         Способ Доставки
       </Text>
-      <DeliveryMethod
-        onSelectDeliveryMethod={onSelectDeliveryMethod}
-        activeDeliveryMethod={activeDeliveryMethod}
-      />
-      <DeliveryForms activeDeliveryMethod={activeDeliveryMethod} />
+      {edit ? (
+        <>
+          <DeliveryMethod
+            styles={styles?.deliveryMethod}
+            onSelectDeliveryMethod={onSelectDeliveryMethod}
+            activeDeliveryMethod={activeDeliveryMethod}
+          />
+          <DeliveryForms
+            styles={styles?.deliveryForms}
+            activeDeliveryMethod={activeDeliveryMethod}
+            formData={formData}
+            onChangeFormData={onChangeFormData}
+            onSave={onSave}
+          />
+        </>
+      ) : (
+        <CurrentDeliveryMethod
+          styles={styles?.currentDeliveryMethod}
+          activeDeliveryMethod={activeDeliveryMethod}
+          formData={formData}
+          rate={rate}
+          onEdit={() => {
+            setEdit(true);
+          }}
+        />
+      )}
     </View>
   );
 };

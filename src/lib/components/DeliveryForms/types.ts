@@ -16,11 +16,16 @@ export type DeliveryFormsStyles = {
   button?: TouchableOpacityProps;
 };
 
-export type DeliveryFormsProps = {
-  activeDeliveryMethod: DeliveryMethodId | null;
-  styles?: DeliveryFormsStyles;
+export type DeliveryFormData = {
+  address?: string;
+  index?: string;
+  comment?: string;
 };
 
-export type PostMethodProps = {
+export type DeliveryFormsProps = {
+  activeDeliveryMethod: DeliveryMethodId;
   styles?: DeliveryFormsStyles;
+  formData: DeliveryFormData;
+  onChangeFormData: (props: DeliveryFormData) => void;
+  onSave: () => void;
 };
