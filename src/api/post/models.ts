@@ -18,12 +18,12 @@ export type PostTariffRequest = {
     width?: number; // Линейная ширина (сантиметры)
   };
   'dimension-type'?: 'S' | 'M' | 'L' | 'XL' | 'OVERSIZED'; // Типоразмер
-  'entries-type': // Категория вложения(Для международных отправлений)
+  'entries-type'?: // Категория вложения(Для международных отправлений)
   'GIFT' | 'DOCUMENT' | 'SALE_OF_GOODS' | 'COMMERCIAL_SAMPLE' | 'OTHER';
   'fragile'?: boolean; // Отметка "Осторожно/Хрупко"
   'index-from'?: string; // Почтовый индекс объекта почтовой связи места приема
   'index-to'?: string; // Почтовый индекс объекта почтовой связи места назначения
-  'inventory': boolean; // Опись вложения
+  'inventory'?: boolean; // Опись вложения
   'mail-category': // Категория РПО
   | 'SIMPLE'
     | 'ORDERED'

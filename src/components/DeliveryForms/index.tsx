@@ -16,7 +16,7 @@ const DeliveryForms: React.FC<DeliveryFormsProps> = ({
 
   const disabled =
     activeDeliveryMethod !== DeliveryMethodId.PICKUP &&
-    (!formData.address || !formData.index);
+    (!formData.address || !formData.index || formData.index?.length < 6);
 
   return (
     <View style={{ ...defaultStyles.container, ...styles?.container }}>

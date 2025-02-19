@@ -5,7 +5,7 @@ A library for integrating the Post and Cdek delivery API
 ## Installation
 
 ```sh
-npm install delivery-shop
+npm install https://github.com/Mobilitytop/delivery_shop.git
 ```
 
 ## Usage
