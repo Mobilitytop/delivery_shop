@@ -16,8 +16,39 @@ import { DeliveryShopView } from "delivery-shop";
 
 // ...
 
-<DeliveryShopView color="tomato" />
+<Delivery
+    postConfig={{
+        accessToken: 'AccessToken ...',
+        basicToken: 'Basic ...',
+        request: {
+        'mail-category': 'ORDINARY',
+        'mail-type': 'ONLINE_PARCEL',
+        'mass': 1000,
+        },
+    }}
+/>
 ```
+
+## Props
+
+#### `postConfig` (required)
+
+propType: `any`
+default: `{accessToken: 'AccessToken ...', basicToken: 'Basic ...', request: {...}}`
+
+Specify the access Token, basic Token and request parameters for calculating the cost of Post delivery. https://otpravka.pochta.ru/new/specification#/nogroup-rate_calculate
+
+#### `deliveryMethods`
+
+propType: `array`
+
+An array of available shipping methods. If not passed, then all are used. Available values: 'courier', 'pickup', 'CDEK-door', 'CDEK-point', 'post'
+
+#### `styles`
+
+propType: `any`
+
+Use this to pass or overwrite styling 
 
 
 ## Contributing
