@@ -1,10 +1,14 @@
 import {
+  ScrollViewProps,
   StyleSheetProperties,
   TextInputProps,
+  TextStyle,
   TouchableOpacityProps,
   ViewStyle,
 } from 'react-native';
 import { DeliveryMethodId } from '../DeliveryMethod/types';
+import { Cdek } from '../../api/cdek';
+import { ApiResponse } from '../../api/cdek/types/api';
 
 export type DeliveryFormsStyles = {
   container?: ViewStyle;
@@ -14,12 +18,18 @@ export type DeliveryFormsStyles = {
   required?: StyleSheetProperties;
   input?: TextInputProps;
   button?: TouchableOpacityProps;
+  search?: ViewStyle;
+  searchResult?: ScrollViewProps;
+  searchResultItem?: TouchableOpacityProps;
+  searchResultText?: TextStyle;
 };
 
 export type DeliveryFormData = {
   address?: string;
   index?: string;
   comment?: string;
+  city?: ApiResponse.GetSuggestCities | null;
+  pickupPoint?: ApiResponse.GetPickupPoints | null;
 };
 
 export type DeliveryFormsProps = {
@@ -28,4 +38,5 @@ export type DeliveryFormsProps = {
   formData: DeliveryFormData;
   onChangeFormData: (props: DeliveryFormData) => void;
   onSave: () => void;
+  CDEKClient: Cdek;
 };

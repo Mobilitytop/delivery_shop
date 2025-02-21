@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheetProperties, Text, View, ViewStyle } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Text, TextStyle, View, ViewStyle } from 'react-native';
 import defaultStyles from './styles';
 import DeliveryMethod from '../DeliveryMethod';
 import CurrentDeliveryMethod from '../CurrentDeliveryMethod';
@@ -10,6 +10,8 @@ import { DeliveryFormData, DeliveryFormsStyles } from '../DeliveryForms/types';
 import { fetchPostTariff } from '../../api/post';
 import { PostTariffRequest } from '../../api/post/models';
 import { CurrentDeliveryMethodStyle } from '../CurrentDeliveryMethod/types';
+import { Cdek } from '../../api/cdek';
+import { ApiRequest } from '../../api/cdek/types/api';
 
 type DeliveryConfig = {
   postConfig: {
@@ -17,10 +19,22 @@ type DeliveryConfig = {
     basicToken: string;
     request: PostTariffRequest;
   };
+  CDEKConfig: {
+    account: string;
+    password: string;
+    url_base: 'https://api.edu.cdek.ru/v2' | 'https://api.cdek.ru/v2';
+    request: Omit<
+      ApiRequest.CalculatorByTariff,
+      'tariff_code' | 'to_location'
+    > &
+      Partial<
+        Pick<ApiRequest.CalculatorByTariff, 'tariff_code' | 'to_location'>
+      >;
+  };
   deliveryMethods?: DeliveryMethodId[];
   styles?: {
     container?: ViewStyle;
-    title?: StyleSheetProperties;
+    title?: TextStyle;
     deliveryMethod?: DeliveryMethodStyle;
     deliveryForms?: DeliveryFormsStyles;
     currentDeliveryMethod?: CurrentDeliveryMethodStyle;
@@ -31,13 +45,26 @@ const initialFormData: DeliveryFormData = {
   address: '',
   index: '',
   comment: '',
+  city: null,
 };
 
-const Delivery: React.FC<DeliveryConfig> = ({ styles, postConfig }) => {
+const Delivery: React.FC<DeliveryConfig> = ({
+  styles,
+  postConfig,
+  CDEKConfig,
+}) => {
   const { isDarkMode } = useApp();
   const [edit, setEdit] = useState(true);
   const [rate, setRate] = useState(0);
   const [formData, setFormData] = useState(initialFormData);
+
+  const CDEKClient = useMemo(() => {
+    return new Cdek({
+      account: CDEKConfig.account,
+      password: CDEKConfig.password,
+      url_base: CDEKConfig.url_base,
+    });
+  }, [CDEKConfig.account, CDEKConfig.password, CDEKConfig.url_base]);
 
   const [activeDeliveryMethod, setActiveDeliveryMethod] =
     useState<DeliveryMethodId>(DeliveryMethodId.COURIER);
@@ -55,8 +82,6 @@ const Delivery: React.FC<DeliveryConfig> = ({ styles, postConfig }) => {
   const onSave = async () => {
     setEdit(false);
 
-    console.log('Helloi=======>');
-
     if (activeDeliveryMethod === DeliveryMethodId.POST) {
       const data = await fetchPostTariff({
         accessToken: postConfig.accessToken,
@@ -64,9 +89,19 @@ const Delivery: React.FC<DeliveryConfig> = ({ styles, postConfig }) => {
         body: { 'index-to': formData.index, ...postConfig.request },
       });
 
-      console.log('data======>', data);
+      if (data?.['total-rate']) {
+        setRate(data?.['total-rate'] / 100);
+      }
+    } else if (activeDeliveryMethod === DeliveryMethodId.CDEK_POINT) {
+      const data = await CDEKClient.calculatorByTariff({
+        ...CDEKConfig.request,
+        tariff_code: 137,
+        to_location: {
+          code: formData.city?.code,
+        },
+      });
 
-      setRate(data?.['total-rate']);
+      setRate(data?.total_sum);
     }
   };
 
@@ -94,6 +129,7 @@ const Delivery: React.FC<DeliveryConfig> = ({ styles, postConfig }) => {
             formData={formData}
             onChangeFormData={onChangeFormData}
             onSave={onSave}
+            CDEKClient={CDEKClient}
           />
         </>
       ) : (

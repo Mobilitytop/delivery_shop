@@ -14,6 +14,21 @@ export default function App() {
             'mass': 1000,
           },
         }}
+        CDEKConfig={{
+          account: 'wqGwiQx0gg8mLtiEKsUinjVSICCjtTEP',
+          password: 'RmAmgvSgSl1yirlz9QupbzOJVqhCxcP5',
+          url_base: 'https://api.edu.cdek.ru/v2',
+          request: {
+            from_location: {
+              code: 44,
+            },
+            packages: [
+              {
+                weight: 1000,
+              },
+            ],
+          },
+        }}
       />
     </ScrollView>
   );

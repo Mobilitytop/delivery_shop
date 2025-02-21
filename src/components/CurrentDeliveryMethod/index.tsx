@@ -192,7 +192,7 @@ const CurrentDeliveryMethod: React.FC<CurrentDeliveryMethodProps> = ({
                     ...styles?.description,
                   }}
                 >
-                  {rate / 100} руб.
+                  {rate} руб.
                 </Text>
               </View>
             )}

@@ -39,6 +39,27 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     textTransform: 'uppercase',
   },
+  search: {
+    position: 'relative',
+    zIndex: 1000,
+  },
+  searchResult: {
+    borderWidth: 1,
+    borderColor: '#ececec',
+    paddingHorizontal: 13,
+    position: 'absolute',
+    top: 46,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    maxHeight: 132,
+  },
+  searchResultItem: {
+    borderBottomWidth: 1,
+    borderColor: '#ececec',
+    paddingVertical: 13,
+  },
+  searchResultText: {},
 });
 
 export default styles;

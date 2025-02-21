@@ -1,125 +1,37 @@
-import React from 'react';
-import { Text, TextInput, View, TouchableOpacity } from 'react-native';
+import React, { useMemo } from 'react';
+import { Text, View, TouchableOpacity } from 'react-native';
 import defaultStyles from './styles';
 import { DeliveryMethodId } from '../DeliveryMethod/types';
 import useApp from '../../hooks/useApp';
 import { DeliveryFormsProps } from './types';
+import Pickup from './Pickup';
+import Post from './Post';
+import CDEKPoint from './CDEK-point';
 
-const DeliveryForms: React.FC<DeliveryFormsProps> = ({
-  styles,
-  activeDeliveryMethod,
-  formData,
-  onChangeFormData,
-  onSave,
-}) => {
+const DeliveryForms: React.FC<DeliveryFormsProps> = (props) => {
   const { isDarkMode } = useApp();
+  const { styles, activeDeliveryMethod, formData, onSave } = props;
 
   const disabled =
-    activeDeliveryMethod !== DeliveryMethodId.PICKUP &&
+    activeDeliveryMethod === DeliveryMethodId.PICKUP &&
     (!formData.address || !formData.index || formData.index?.length < 6);
+
+  const form = useMemo(() => {
+    switch (activeDeliveryMethod) {
+      case DeliveryMethodId.PICKUP:
+        return <Pickup {...props} />;
+      case DeliveryMethodId.POST:
+        return <Post {...props} />;
+      case DeliveryMethodId.CDEK_POINT:
+        return <CDEKPoint {...props} />;
+      default:
+        return <></>;
+    }
+  }, [activeDeliveryMethod, props]);
 
   return (
     <View style={{ ...defaultStyles.container, ...styles?.container }}>
-      {activeDeliveryMethod !== DeliveryMethodId.PICKUP && (
-        <>
-          <View
-            style={{
-              ...defaultStyles.labelWrapper,
-              ...styles?.labelWrapper,
-            }}
-          >
-            <Text
-              style={{
-                color: isDarkMode ? '#fff' : '#000',
-                ...defaultStyles.label,
-                ...styles?.label,
-              }}
-            >
-              Адрес доставки
-            </Text>
-
-            <Text
-              style={{
-                ...defaultStyles.required,
-                ...styles?.required,
-              }}
-            >
-              *
-            </Text>
-          </View>
-          <TextInput
-            value={formData.address}
-            onChangeText={(address) => onChangeFormData({ address })}
-            style={{
-              color: isDarkMode ? '#fff' : '#000',
-              ...defaultStyles.input,
-              ...styles?.input,
-            }}
-          />
-
-          <View
-            style={{
-              ...defaultStyles.labelWrapper,
-              ...styles?.labelWrapper,
-            }}
-          >
-            <Text
-              style={{
-                color: isDarkMode ? '#fff' : '#000',
-                ...defaultStyles.label,
-                ...styles?.label,
-              }}
-            >
-              Индекс
-            </Text>
-            <Text
-              style={{
-                ...defaultStyles.required,
-                ...styles?.required,
-              }}
-            >
-              *
-            </Text>
-          </View>
-          <TextInput
-            value={formData.index}
-            keyboardType="numeric"
-            maxLength={6}
-            onChangeText={(index) => onChangeFormData({ index })}
-            style={{
-              color: isDarkMode ? '#fff' : '#000',
-              ...defaultStyles.input,
-              ...styles?.input,
-            }}
-          />
-        </>
-      )}
-
-      <View
-        style={{
-          ...defaultStyles.labelWrapper,
-          ...styles?.labelWrapper,
-        }}
-      >
-        <Text
-          style={{
-            color: isDarkMode ? '#fff' : '#000',
-            ...defaultStyles.label,
-            ...styles?.label,
-          }}
-        >
-          Комментарий к заказу
-        </Text>
-      </View>
-      <TextInput
-        value={formData.comment}
-        onChangeText={(comment) => onChangeFormData({ comment })}
-        style={{
-          color: isDarkMode ? '#fff' : '#000',
-          ...defaultStyles.input,
-          ...styles?.input,
-        }}
-      />
+      {form}
 
       <Text
         style={{
