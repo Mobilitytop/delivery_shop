@@ -85,6 +85,34 @@ const CurrentDeliveryMethod: React.FC<CurrentDeliveryMethodProps> = ({
               </Text>
             )}
 
+            {formData.pickupPoint && (
+              <View
+                style={{
+                  ...defaultStyles.descriptionWrapper,
+                  ...styles?.descriptionWrapper,
+                }}
+              >
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  Пункт СДЕК
+                </Text>
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  {formData.pickupPoint?.name}
+                </Text>
+              </View>
+            )}
+
             {!!formData.address && (
               <View
                 style={{
@@ -109,6 +137,118 @@ const CurrentDeliveryMethod: React.FC<CurrentDeliveryMethodProps> = ({
                   }}
                 >
                   {formData.address}
+                </Text>
+              </View>
+            )}
+
+            {!!formData.flat && (
+              <View
+                style={{
+                  ...defaultStyles.descriptionWrapper,
+                  ...styles?.descriptionWrapper,
+                }}
+              >
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  Квартира
+                </Text>
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  {formData.flat}
+                </Text>
+              </View>
+            )}
+
+            {!!formData.entrance && (
+              <View
+                style={{
+                  ...defaultStyles.descriptionWrapper,
+                  ...styles?.descriptionWrapper,
+                }}
+              >
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  Подъезд
+                </Text>
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  {formData.entrance}
+                </Text>
+              </View>
+            )}
+
+            {!!formData.floor && (
+              <View
+                style={{
+                  ...defaultStyles.descriptionWrapper,
+                  ...styles?.descriptionWrapper,
+                }}
+              >
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  Этаж
+                </Text>
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  {formData.floor}
+                </Text>
+              </View>
+            )}
+
+            {!!formData.intercom && (
+              <View
+                style={{
+                  ...defaultStyles.descriptionWrapper,
+                  ...styles?.descriptionWrapper,
+                }}
+              >
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  Домофон
+                </Text>
+                <Text
+                  style={{
+                    color: isDarkMode ? '#fff' : '#000',
+                    ...defaultStyles.description,
+                    ...styles?.description,
+                  }}
+                >
+                  {formData.intercom}
                 </Text>
               </View>
             )}

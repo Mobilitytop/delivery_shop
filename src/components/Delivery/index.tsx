@@ -43,9 +43,14 @@ type DeliveryConfig = {
 
 const initialFormData: DeliveryFormData = {
   address: '',
+  entrance: '',
+  flat: '',
+  floor: '',
+  intercom: '',
   index: '',
   comment: '',
   city: null,
+  pickupPoint: null,
 };
 
 const Delivery: React.FC<DeliveryConfig> = ({
@@ -95,11 +100,24 @@ const Delivery: React.FC<DeliveryConfig> = ({
     } else if (activeDeliveryMethod === DeliveryMethodId.CDEK_POINT) {
       const data = await CDEKClient.calculatorByTariff({
         ...CDEKConfig.request,
-        tariff_code: 137,
+        tariff_code: 136,
         to_location: {
           code: formData.city?.code,
         },
       });
+
+      setRate(data?.total_sum);
+    } else if (activeDeliveryMethod === DeliveryMethodId.CDEK_DOOR) {
+      const params = {
+        ...CDEKConfig.request,
+        tariff_code: 137,
+        to_location: {
+          code: formData.city?.code,
+          address: `${formData.address} ${formData.entrance}д. ${formData.floor}эт. ${formData.flat}кв. Домофон: ${formData.intercom}`,
+        },
+      };
+
+      const data = await CDEKClient.calculatorByTariff(params);
 
       setRate(data?.total_sum);
     }

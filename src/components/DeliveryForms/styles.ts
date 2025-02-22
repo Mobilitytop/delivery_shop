@@ -10,12 +10,20 @@ const styles = StyleSheet.create({
   labelWrapper: {
     flexDirection: 'row',
   },
+  form: {
+    flex: 1,
+  },
   input: {
     height: 48,
     borderWidth: 1,
     borderColor: '#ececec',
     marginBottom: 20,
     paddingLeft: 13,
+    flex: 1,
+  },
+  inputs: {
+    flexDirection: 'row',
+    gap: 12,
   },
   required: {
     color: 'red',

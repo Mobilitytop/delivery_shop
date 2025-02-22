@@ -12,6 +12,8 @@ import { ApiResponse } from '../../api/cdek/types/api';
 
 export type DeliveryFormsStyles = {
   container?: ViewStyle;
+  inputs?: ViewStyle;
+  form?: ViewStyle;
   labelWrapper?: StyleSheetProperties;
   label?: StyleSheetProperties;
   buttonText?: StyleSheetProperties;
@@ -26,6 +28,10 @@ export type DeliveryFormsStyles = {
 
 export type DeliveryFormData = {
   address?: string;
+  entrance?: string;
+  flat?: string;
+  floor?: string;
+  intercom?: string;
   index?: string;
   comment?: string;
   city?: ApiResponse.GetSuggestCities | null;

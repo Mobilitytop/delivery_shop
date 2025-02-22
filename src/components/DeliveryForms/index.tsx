@@ -1,29 +1,71 @@
 import React, { useMemo } from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
-import defaultStyles from './styles';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+
 import { DeliveryMethodId } from '../DeliveryMethod/types';
-import useApp from '../../hooks/useApp';
 import { DeliveryFormsProps } from './types';
+import useApp from '../../hooks/useApp';
+import defaultStyles from './styles';
+
+import Courier from './Courier';
 import Pickup from './Pickup';
-import Post from './Post';
+import CDEKDoor from './CDEK-door';
 import CDEKPoint from './CDEK-point';
+import Post from './Post';
 
 const DeliveryForms: React.FC<DeliveryFormsProps> = (props) => {
   const { isDarkMode } = useApp();
   const { styles, activeDeliveryMethod, formData, onSave } = props;
 
-  const disabled =
-    activeDeliveryMethod === DeliveryMethodId.PICKUP &&
-    (!formData.address || !formData.index || formData.index?.length < 6);
+  const disabled = useMemo(() => {
+    switch (activeDeliveryMethod) {
+      case DeliveryMethodId.COURIER:
+        return (
+          !formData.address ||
+          !formData.flat ||
+          !formData.entrance ||
+          !formData.intercom ||
+          !formData.floor
+        );
+      case DeliveryMethodId.PICKUP:
+        return false;
+      case DeliveryMethodId.CDEK_DOOR:
+        return (
+          !formData.city?.code ||
+          !formData.address ||
+          !formData.flat ||
+          !formData.entrance ||
+          !formData.intercom ||
+          !formData.floor
+        );
+      case DeliveryMethodId.CDEK_POINT:
+        return !formData.city?.code || !formData.pickupPoint;
+      case DeliveryMethodId.POST:
+        return (
+          !formData.address || !formData.index || formData.index?.length < 6
+        );
+      default:
+        return false;
+    }
+  }, [activeDeliveryMethod, formData]);
 
   const form = useMemo(() => {
     switch (activeDeliveryMethod) {
+      case DeliveryMethodId.COURIER:
+        return <Courier {...props} />;
       case DeliveryMethodId.PICKUP:
         return <Pickup {...props} />;
-      case DeliveryMethodId.POST:
-        return <Post {...props} />;
+      case DeliveryMethodId.CDEK_DOOR:
+        return <CDEKDoor {...props} />;
       case DeliveryMethodId.CDEK_POINT:
         return <CDEKPoint {...props} />;
+      case DeliveryMethodId.POST:
+        return <Post {...props} />;
       default:
         return <></>;
     }
@@ -31,8 +73,12 @@ const DeliveryForms: React.FC<DeliveryFormsProps> = (props) => {
 
   return (
     <View style={{ ...defaultStyles.container, ...styles?.container }}>
-      {form}
-
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        {form}
+      </KeyboardAvoidingView>
       <Text
         style={{
           color: isDarkMode ? '#fff' : '#000',
