@@ -149,6 +149,7 @@ const CDEKPoint: React.FC<CDEKPointProps> = ({
               <ScrollView
                 style={{
                   ...defaultStyles.searchResult,
+                  ...{ top: 72 },
                   ...styles?.searchResult,
                 }}
               >

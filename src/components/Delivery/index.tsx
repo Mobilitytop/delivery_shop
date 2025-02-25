@@ -1,4 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import { Text, TextStyle, View, ViewStyle } from 'react-native';
 import defaultStyles from './styles';
 import DeliveryMethod from '../DeliveryMethod';
@@ -39,6 +45,16 @@ type DeliveryConfig = {
     deliveryForms?: DeliveryFormsStyles;
     currentDeliveryMethod?: CurrentDeliveryMethodStyle;
   };
+  onChange?: (
+    data: DeliveryFormData & { rate: number } & {
+      activeDeliveryMethod: DeliveryMethodId;
+    }
+  ) => void;
+  getData?: (
+    data: DeliveryFormData & { rate: number } & {
+      activeDeliveryMethod: DeliveryMethodId;
+    }
+  ) => void;
 };
 
 const initialFormData: DeliveryFormData = {
@@ -57,11 +73,19 @@ const Delivery: React.FC<DeliveryConfig> = ({
   styles,
   postConfig,
   CDEKConfig,
+  onChange,
+  getData,
 }) => {
   const { isDarkMode } = useApp();
   const [edit, setEdit] = useState(true);
   const [rate, setRate] = useState(0);
   const [formData, setFormData] = useState(initialFormData);
+
+  let activeDeliveryMethod: DeliveryMethodId,
+    setActiveDeliveryMethod: Dispatch<SetStateAction<DeliveryMethodId>>;
+  [activeDeliveryMethod, setActiveDeliveryMethod] = useState<DeliveryMethodId>(
+    DeliveryMethodId.COURIER
+  );
 
   const CDEKClient = useMemo(() => {
     return new Cdek({
@@ -71,8 +95,11 @@ const Delivery: React.FC<DeliveryConfig> = ({
     });
   }, [CDEKConfig.account, CDEKConfig.password, CDEKConfig.url_base]);
 
-  const [activeDeliveryMethod, setActiveDeliveryMethod] =
-    useState<DeliveryMethodId>(DeliveryMethodId.COURIER);
+  useEffect(() => {
+    if (onChange) {
+      onChange({ ...formData, rate, activeDeliveryMethod });
+    }
+  }, [activeDeliveryMethod, formData, onChange, rate]);
 
   const onSelectDeliveryMethod = (id: DeliveryMethodId) => {
     setActiveDeliveryMethod(id);
@@ -96,6 +123,11 @@ const Delivery: React.FC<DeliveryConfig> = ({
 
       if (data?.['total-rate']) {
         setRate(data?.['total-rate'] / 100);
+        getData?.({
+          ...formData,
+          rate: data?.['total-rate'] / 100,
+          activeDeliveryMethod,
+        });
       }
     } else if (activeDeliveryMethod === DeliveryMethodId.CDEK_POINT) {
       const data = await CDEKClient.calculatorByTariff({
@@ -107,6 +139,7 @@ const Delivery: React.FC<DeliveryConfig> = ({
       });
 
       setRate(data?.total_sum);
+      getData?.({ ...formData, rate: data?.total_sum, activeDeliveryMethod });
     } else if (activeDeliveryMethod === DeliveryMethodId.CDEK_DOOR) {
       const params = {
         ...CDEKConfig.request,
@@ -120,6 +153,9 @@ const Delivery: React.FC<DeliveryConfig> = ({
       const data = await CDEKClient.calculatorByTariff(params);
 
       setRate(data?.total_sum);
+      getData?.({ ...formData, rate: data?.total_sum, activeDeliveryMethod });
+    } else {
+      getData?.({ ...formData, rate, activeDeliveryMethod });
     }
   };
 

@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#fff',
     maxHeight: 132,
+    zIndex: 1000,
   },
   searchResultItem: {
     borderBottomWidth: 1,

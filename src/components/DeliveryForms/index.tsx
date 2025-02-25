@@ -75,7 +75,7 @@ const DeliveryForms: React.FC<DeliveryFormsProps> = (props) => {
     <View style={{ ...defaultStyles.container, ...styles?.container }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
+        style={{ flex: 1, zIndex: 1000 }}
       >
         {form}
       </KeyboardAvoidingView>
