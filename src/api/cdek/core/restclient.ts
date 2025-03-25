@@ -22,12 +22,30 @@ export class RestClient {
     this.url_base = options.url_base ?? 'https://api.cdek.ru/v2';
     this.on_error = options.on_error;
   }
+
   get token() {
     return this._token;
   }
 
   get token_expire() {
     return this._token_expire;
+  }
+
+  private logRequest(method: RequestMethod, url: string, payload?: any) {
+    console.log(`[Request] ${method} ${url}`);
+    if (payload) {
+      console.log('[Request Payload]', JSON.stringify(payload, null, 2));
+    }
+  }
+
+  private logResponse(method: RequestMethod, url: string, response: any) {
+    console.log(`[Response] ${method} ${url}`);
+    console.log('[Response Data]', JSON.stringify(response, null, 2));
+  }
+
+  private logError(method: RequestMethod, url: string, error: Error) {
+    console.error(`[Error] ${method} ${url}`);
+    console.error('[Error Details]', error);
   }
 
   async auth(): Promise<void> {
@@ -44,7 +62,10 @@ export class RestClient {
       )
       .join('&');
 
-    const res = await fetch(this.url_base + '/oauth/token?parameters', {
+    const url = this.url_base + '/oauth/token?parameters';
+    this.logRequest('POST', url, details);
+
+    const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -53,26 +74,31 @@ export class RestClient {
     });
 
     if (res.ok === false) {
-      throw new AuthError(await res.text(), {
+      const error = new AuthError(await res.text(), {
         cause: `${res.status} ${res.statusText}`,
       });
+      this.logError('POST', url, error);
+      throw error;
     }
 
     this._token = await res.json();
     this._token_expire = Date.now() + (this.token?.expires_in ?? 3600) * 1000;
+    this.logResponse('POST', url, this._token);
   }
 
   private async request<T>(
     init: RequestInit & { method: RequestMethod }
   ): Promise<T> {
     try {
-      if (this.token_expire === undefined || Date.now() > this.token_expire) {
+      if (!this.token || Date.now() > this.token_expire!) {
         await this.auth();
       }
 
       const target = `${this.url_base}${init.url}${
         init.query ? '?' + this.params(init.query) : ''
       }`;
+
+      this.logRequest(init.method, target, init.payload);
 
       const res = await fetch(target, {
         method: init.method,
@@ -85,17 +111,31 @@ export class RestClient {
 
       if (res.ok === false) {
         if (res.headers.get('Content-Type') === 'application/json') {
-          throw new ApiError(
+          const error = new ApiError(
             await res.json(),
             `${res.status} ${res.statusText}, ${res.url}`
           );
+          this.logError(init.method, target, error);
+          throw error;
         } else {
-          throw new HttpError('HttpError\n' + (await res.text()));
+          const error = new HttpError('HttpError\n' + (await res.text()));
+          this.logError(init.method, target, error);
+          throw error;
         }
       }
 
-      return (await res.json()) as T;
+      const data = (await res.json()) as T;
+      this.logResponse(init.method, target, data);
+      return data;
     } catch (err: any) {
+      console.log(JSON.stringify(err));
+      console.log(err?.response);
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        const networkError = new Error('Network error: Failed to fetch');
+        this.logError(init.method, '', networkError);
+        throw networkError;
+      }
+
       if (this.on_error) {
         this.on_error(err);
         return null as T;
@@ -125,7 +165,6 @@ export class RestClient {
     return this.request<T>({ ...init, method: 'DELETE' });
   }
 
-  // deno-lint-ignore no-explicit-any
   private params(query: Record<string, any>): URLSearchParams {
     return new URLSearchParams(
       Object.entries(query).map<string[]>((item) => [

@@ -1,3 +1,3 @@
 import Delivery from './components/Delivery';
-
-export default Delivery;
+import DeliveryWidget from './components/DeliveryWidget';
+export default { Delivery, DeliveryWidget };
