@@ -153,6 +153,11 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
           fontSize: 16,
           fontWeight: '600',
         },
+        date:{
+          color: colors?.text || '#000',
+          marginTop:10,
+          fontSize: 16,
+        },
         loading: {
           color: colors?.text || '#000',
           textAlign: 'center',
@@ -171,7 +176,7 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
           <View key={option.id} style={styles.option}>
             <View style={styles.section}>
               <Text style={styles.title}>{option.title}</Text>
-              <Text>Срок доставки: {option.duration}</Text>
+              <Text style={styles.date}>Срок доставки: {option.duration}</Text>
             </View>
             <Text style={styles.title}>
               {option.cost === 0
