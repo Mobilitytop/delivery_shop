@@ -1,0 +1,1 @@
+{"version":3,"file":"api.d.ts","sourceRoot":"","sources":["../../../../../../../src/api/cdek/errors/api.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,cAAc,CAAC;AAE9C,qBAAa,QAAS,SAAQ,KAAK;IAExB,QAAQ,EAAE,cAAc;gBAAxB,QAAQ,EAAE,cAAc,EAC/B,OAAO,EAAE,MAAM;CAIlB"}

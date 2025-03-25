@@ -1,0 +1,1 @@
+{"version":3,"names":["ApiRequest","ApiResponse","ApiBase","ApiWebhook"],"sourceRoot":"../../../../../src","sources":["api/cdek/types/api.ts"],"mappings":";;AAAA,OAAO,KAAKA,UAAU,MAAM,kBAAe;AAC3C,OAAO,KAAKC,WAAW,MAAM,mBAAgB;AAC7C,OAAO,KAAKC,OAAO,MAAM,eAAY;AACrC,OAAO,KAAKC,UAAU,MAAM,kBAAe","ignoreList":[]}

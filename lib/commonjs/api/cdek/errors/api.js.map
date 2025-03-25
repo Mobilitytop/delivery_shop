@@ -1,0 +1,1 @@
+{"version":3,"names":["ApiError","Error","constructor","response","message","exports"],"sourceRoot":"../../../../../src","sources":["api/cdek/errors/api.ts"],"mappings":";;;;;;AAEO,MAAMA,QAAQ,SAASC,KAAK,CAAC;EAClCC,WAAWA,CACFC,QAAwB,EAC/BC,OAAe,EACf;IACA,KAAK,CAACA,OAAO,CAAC;IAAC,KAHRD,QAAwB,GAAxBA,QAAwB;EAIjC;AACF;AAACE,OAAA,CAAAL,QAAA,GAAAA,QAAA","ignoreList":[]}

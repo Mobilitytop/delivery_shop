@@ -1,0 +1,1 @@
+{"version":3,"names":["useColorScheme","useApp","isDarkMode"],"sourceRoot":"../../../src","sources":["hooks/useApp.ts"],"mappings":";;AAAA,SAASA,cAAc,QAAQ,cAAc;AAE7C,MAAMC,MAAM,GAAGA,CAAA,KAAM;EACnB,MAAMC,UAAU,GAAGF,cAAc,CAAC,CAAC,KAAK,MAAM;EAE9C,OAAO;IAAEE;EAAW,CAAC;AACvB,CAAC;AAED,eAAeD,MAAM","ignoreList":[]}
