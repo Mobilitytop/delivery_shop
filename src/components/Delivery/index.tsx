@@ -18,7 +18,7 @@ import { PostTariffRequest } from '../../api/post/models';
 import { CurrentDeliveryMethodStyle } from '../CurrentDeliveryMethod/types';
 import { Cdek } from '../../api/cdek';
 import { ApiRequest } from '../../api/cdek/types/api';
-
+import { useCourierist } from '../../api/courierist/CourieristProvider';
 type DeliveryConfig = {
   postConfig: {
     accessToken: string;
@@ -80,6 +80,7 @@ const Delivery: React.FC<DeliveryConfig> = ({
   const [edit, setEdit] = useState(true);
   const [rate, setRate] = useState(0);
   const [formData, setFormData] = useState(initialFormData);
+  const { client, isAuthenticated } = useCourierist();
 
   let activeDeliveryMethod: DeliveryMethodId,
     setActiveDeliveryMethod: Dispatch<SetStateAction<DeliveryMethodId>>;

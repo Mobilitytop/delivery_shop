@@ -3,8 +3,7 @@ import { DeliveryMethodId, Method } from './types';
 export const deliveriesData: Method[] = [
   {
     id: DeliveryMethodId.COURIER,
-    title: 'Доставка курьером по Москве внутри МКАД?',
-    description: '2 500 руб.',
+    title: 'Доставка курьером по Москве внутри МКАД',
   },
   {
     id: DeliveryMethodId.PICKUP,
