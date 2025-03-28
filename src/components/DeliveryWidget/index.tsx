@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { DeliveryMethodId } from '../DeliveryMethod/types';
+import { DeliveryMethodId } from './types';
 import { fetchPostTariff } from '../../api/post';
 import { PostTariffRequest } from '../../api/post/models';
 import { Cdek } from '../../api/cdek';

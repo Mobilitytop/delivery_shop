@@ -1,6 +1,6 @@
 import { StyleSheetProperties, TouchableOpacityProps, ViewStyle } from 'react-native';
 import { DeliveryFormData } from '../DeliveryForms/types';
-import { DeliveryMethodId } from '../DeliveryMethod/types';
+import { DeliveryMethodId } from '../DeliveryWidget/types';
 export type CurrentDeliveryMethodStyle = {
     container?: ViewStyle;
     item?: StyleSheetProperties;

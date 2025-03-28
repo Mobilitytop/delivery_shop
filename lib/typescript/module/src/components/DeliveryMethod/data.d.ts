@@ -1,3 +1,3 @@
-import { Method } from './types';
+import { Method } from '../DeliveryWidget/types';
 export declare const deliveriesData: Method[];
 //# sourceMappingURL=data.d.ts.map

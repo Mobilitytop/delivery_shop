@@ -63,7 +63,7 @@ export class RestClient {
       .join('&');
 
     const url = this.url_base + '/oauth/token?parameters';
-    this.logRequest('POST', url, details);
+    //this.logRequest('POST', url, details);
 
     const res = await fetch(url, {
       method: 'POST',
@@ -83,7 +83,7 @@ export class RestClient {
 
     this._token = await res.json();
     this._token_expire = Date.now() + (this.token?.expires_in ?? 3600) * 1000;
-    this.logResponse('POST', url, this._token);
+   // this.logResponse('POST', url, this._token);
   }
 
   private async request<T>(
@@ -98,7 +98,7 @@ export class RestClient {
         init.query ? '?' + this.params(init.query) : ''
       }`;
 
-      this.logRequest(init.method, target, init.payload);
+      //this.logRequest(init.method, target, init.payload);
 
       const res = await fetch(target, {
         method: init.method,
@@ -125,7 +125,7 @@ export class RestClient {
       }
 
       const data = (await res.json()) as T;
-      this.logResponse(init.method, target, data);
+     // this.logResponse(init.method, target, data);
       return data;
     } catch (err: any) {
       console.log(JSON.stringify(err));

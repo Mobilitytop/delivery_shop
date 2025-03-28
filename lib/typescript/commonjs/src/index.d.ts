@@ -11,23 +11,23 @@ declare const _default: {
             url_base: "https://api.edu.cdek.ru/v2" | "https://api.cdek.ru/v2";
             request: Omit<import("./api/cdek/types/api/request").CalculatorByTariff, "tariff_code" | "to_location"> & Partial<Pick<import("./api/cdek/types/api/request").CalculatorByTariff, "tariff_code" | "to_location">>;
         };
-        deliveryMethods?: import("./components/DeliveryMethod/types").DeliveryMethodId[];
+        deliveryMethods?: import("./components/DeliveryWidget/types").DeliveryMethodId[];
         styles?: {
             container?: import("react-native").ViewStyle;
             title?: import("react-native").TextStyle;
-            deliveryMethod?: import("./components/DeliveryMethod/types").DeliveryMethodStyle;
+            deliveryMethod?: import("./components/DeliveryWidget/types").DeliveryMethodStyle;
             deliveryForms?: import("./components/DeliveryForms/types").DeliveryFormsStyles;
             currentDeliveryMethod?: import("./components/CurrentDeliveryMethod/types").CurrentDeliveryMethodStyle;
         };
         onChange?: (data: import("./components/DeliveryForms/types").DeliveryFormData & {
             rate: number;
         } & {
-            activeDeliveryMethod: import("./components/DeliveryMethod/types").DeliveryMethodId;
+            activeDeliveryMethod: import("./components/DeliveryWidget/types").DeliveryMethodId;
         }) => void;
         getData?: (data: import("./components/DeliveryForms/types").DeliveryFormData & {
             rate: number;
         } & {
-            activeDeliveryMethod: import("./components/DeliveryMethod/types").DeliveryMethodId;
+            activeDeliveryMethod: import("./components/DeliveryWidget/types").DeliveryMethodId;
         }) => void;
     }>;
     DeliveryWidget: import("react").FC<{
@@ -51,7 +51,7 @@ declare const _default: {
             request: Omit<import("./api/cdek/types/api/request").CalculatorByTariff, "tariff_code" | "to_location"> & Partial<Pick<import("./api/cdek/types/api/request").CalculatorByTariff, "tariff_code" | "to_location">>;
         };
         customOptions?: {
-            id: import("./components/DeliveryMethod/types").DeliveryMethodId | string;
+            id: import("./components/DeliveryWidget/types").DeliveryMethodId | string;
             title: string;
             cost: number;
             duration: string;

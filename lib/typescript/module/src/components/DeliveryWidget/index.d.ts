@@ -1,5 +1,5 @@
 import React from 'react';
-import { DeliveryMethodId } from '../DeliveryMethod/types';
+import { DeliveryMethodId } from './types';
 import { PostTariffRequest } from '../../api/post/models';
 import { ApiRequest } from '../../api/cdek/types/api';
 type DeliveryWidgetProps = {

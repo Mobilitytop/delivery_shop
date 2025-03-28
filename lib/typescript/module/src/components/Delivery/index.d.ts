@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextStyle, ViewStyle } from 'react-native';
-import { DeliveryMethodId, DeliveryMethodStyle } from '../DeliveryMethod/types';
+import { DeliveryMethodId, DeliveryMethodStyle } from '../DeliveryWidget/types';
 import { DeliveryFormData, DeliveryFormsStyles } from '../DeliveryForms/types';
 import { PostTariffRequest } from '../../api/post/models';
 import { CurrentDeliveryMethodStyle } from '../CurrentDeliveryMethod/types';

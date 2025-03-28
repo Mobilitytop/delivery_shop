@@ -1,5 +1,5 @@
 import { ScrollViewProps, StyleSheetProperties, TextInputProps, TextStyle, TouchableOpacityProps, ViewStyle } from 'react-native';
-import { DeliveryMethodId } from '../DeliveryMethod/types';
+import { DeliveryMethodId } from '../DeliveryWidget/types';
 import { Cdek } from '../../api/cdek';
 import { ApiResponse } from '../../api/cdek/types/api';
 export type DeliveryFormsStyles = {
