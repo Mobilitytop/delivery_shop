@@ -31,18 +31,6 @@ export class RestClient {
     return this._token_expire;
   }
 
-  private logRequest(method: RequestMethod, url: string, payload?: any) {
-    console.log(`[Request] ${method} ${url}`);
-    if (payload) {
-      console.log('[Request Payload]', JSON.stringify(payload, null, 2));
-    }
-  }
-
-  private logResponse(method: RequestMethod, url: string, response: any) {
-    console.log(`[Response] ${method} ${url}`);
-    console.log('[Response Data]', JSON.stringify(response, null, 2));
-  }
-
   private logError(method: RequestMethod, url: string, error: Error) {
     console.error(`[Error] ${method} ${url}`);
     console.error('[Error Details]', error);

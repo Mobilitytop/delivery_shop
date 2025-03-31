@@ -11,8 +11,6 @@ export declare class RestClient {
     constructor(options: InitOptions);
     get token(): ApiResponse.OAuth | undefined;
     get token_expire(): number | undefined;
-    private logRequest;
-    private logResponse;
     private logError;
     auth(): Promise<void>;
     private request;

@@ -1,1 +1,1 @@
-{"version":3,"names":["Delivery","DeliveryWidget"],"sourceRoot":"../../src","sources":["index.tsx"],"mappings":";;AAAA,OAAOA,QAAQ,MAAM,gCAAuB;AAC5C,OAAOC,cAAc,MAAM,sCAA6B;AACxD,eAAe;EAAED,QAAQ;EAAEC;AAAe,CAAC","ignoreList":[]}
+{"version":3,"names":["DeliverySelector","DeliveryMethodId","DeliveryWidget"],"sourceRoot":"../../src","sources":["index.tsx"],"mappings":";;AAAA,OAAOA,gBAAgB,IAAGC,gBAAgB,QAAO,wCAA+B;AAChF,OAAOC,cAAc,MAAM,sCAA6B;AACxD,eAAe;EAAEF,gBAAgB;EAAEE,cAAc;EAAED;AAAiB,CAAC","ignoreList":[]}

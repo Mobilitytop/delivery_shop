@@ -1,7 +1,9 @@
 export enum DeliveryMethodId {
-  COURIER = 'courier',
-  PICKUP = 'pickup',
-  CDEK_DOOR = 'CDEK-door',
-  CDEK_POINT = 'CDEK-point',
   POST = 'post',
+  CDEK_DOOR = 'cdek_door',
+  CDEK_POINT = 'cdek_point',
+  CUSTOM = 'custom',
+  COURIERIST = 'courierist',
+  LPOST_COURIER = 'lpost_courier', // Курьерская доставка
+  LPOST_POINT = 'lpost_point',
 }

@@ -27,7 +27,7 @@ type DeliveryOption = {
 };
 
 // Универсальный интерфейс посылки
-interface UniversalPackage {
+export interface UniversalPackage {
   weight: number; // Вес в граммах
   length?: number; // Длина в см
   width?: number; // Ширина в см
