@@ -103,27 +103,42 @@ declare const _default: {
             background?: string;
             border?: string;
             primary?: string;
+            radioBorder?: string;
+            radioFill?: string;
         };
         deliveryMethods: ({
-            method: import("./components/DeliveryWidget/types").DeliveryMethodId.POST;
+            method: import("./components/DeliveryWidget").DeliveryMethodId.POST;
             data: {
                 fromIndex: string;
                 toIndex: string;
             };
         } | {
-            method: import("./components/DeliveryWidget/types").DeliveryMethodId.CDEK_DOOR | import("./components/DeliveryWidget/types").DeliveryMethodId.CDEK_POINT;
+            method: import("./components/DeliveryWidget").DeliveryMethodId.CDEK_DOOR | import("./components/DeliveryWidget").DeliveryMethodId.CDEK_POINT;
+            data: {
+                fromAddress: string;
+                toAddress: string;
+                fromCoordinates?: {
+                    longitude: number;
+                    latitude: number;
+                };
+                toCoordinates?: {
+                    longitude: number;
+                    latitude: number;
+                };
+            };
+        } | {
+            method: import("./components/DeliveryWidget").DeliveryMethodId.CUSTOM;
+            data: {
+                customField: string;
+            };
+        } | {
+            method: import("./components/DeliveryWidget").DeliveryMethodId.COURIERIST;
             data: {
                 fromAddress: string;
                 toAddress: string;
             };
         } | {
-            method: import("./components/DeliveryWidget/types").DeliveryMethodId.COURIERIST;
-            data: {
-                fromAddress: string;
-                toAddress: string;
-            };
-        } | {
-            method: import("./components/DeliveryWidget/types").DeliveryMethodId.LPOST_COURIER;
+            method: import("./components/DeliveryWidget").DeliveryMethodId.LPOST_COURIER;
             data: {
                 fromWarehouseId: number;
                 toPickupPointId?: number;
@@ -131,7 +146,7 @@ declare const _default: {
                 longitude?: number;
             };
         } | {
-            method: import("./components/DeliveryWidget/types").DeliveryMethodId.LPOST_POINT;
+            method: import("./components/DeliveryWidget").DeliveryMethodId.LPOST_POINT;
             data: {
                 fromWarehouseId: number;
                 toPickupPointId?: number;
@@ -159,13 +174,52 @@ declare const _default: {
             secret: string;
         };
         customOptions?: {
-            id: import("./components/DeliveryWidget/types").DeliveryMethodId | string;
+            id: import("./components/DeliveryWidget").DeliveryMethodId | string;
             title: string;
             cost: number;
             duration: string;
         }[];
+        onSelect?: (option: {
+            id: import("./components/DeliveryWidget").DeliveryMethodId | string;
+            title: string;
+            cost: number;
+            duration: string;
+        }) => void;
+        onLoadComplete?: (options: {
+            id: import("./components/DeliveryWidget").DeliveryMethodId | string;
+            title: string;
+            cost: number;
+            duration: string;
+        }[]) => void;
+        onError?: (error: Error) => void;
+        initialSelectedId?: string;
     }>;
     DeliveryMethodId: typeof DeliveryMethodId;
+    PickupPointSelector: import("react").FC<{
+        deliveryMethod: import("./components/PickupPointSelector/types").DeliveryMethodId;
+        cdekConfig?: {
+            account: string;
+            password: string;
+            url_base: "https://api.edu.cdek.ru/v2" | "https://api.cdek.ru/v2";
+        };
+        toAddress: string;
+        toIndex: string | number;
+        colors?: {
+            text?: string;
+            background?: string;
+            border?: string;
+            primary?: string;
+            radioBorder?: string;
+            radioFill?: string;
+        };
+        onSelect?: (pickupPoint: {
+            code: string;
+            name: string;
+            address: string;
+            workTime: string;
+        }) => void;
+        onError?: (error: Error) => void;
+    }>;
 };
 export default _default;
 //# sourceMappingURL=index.d.ts.map

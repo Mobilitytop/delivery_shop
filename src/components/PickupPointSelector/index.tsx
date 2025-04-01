@@ -40,7 +40,6 @@ type Colors = {
 const PickupPointSelector: React.FC<PickupPointSelectorProps> = ({
   deliveryMethod,
   cdekConfig,
-  toAddress,
   toIndex,
   colors,
   onSelect,
@@ -88,7 +87,7 @@ const PickupPointSelector: React.FC<PickupPointSelectorProps> = ({
 
   useEffect(() => {
     fetchPickupPoints();
-  }, [fetchPickupPoints]);
+  }, []);
 
   const styles = useMemo(
     () =>
@@ -147,7 +146,7 @@ const PickupPointSelector: React.FC<PickupPointSelectorProps> = ({
           onSelect={(selectedItem: PickupPoint) => {
             onSelect?.(selectedItem);
           }}
-          renderButton={(selectedItem, isOpened) => {
+          renderButton={(selectedItem) => {
             return (
               <View style={styles.dropdownButton}>
                 
