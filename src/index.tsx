@@ -1,3 +1,4 @@
 import DeliverySelector, {DeliveryMethodId} from './components/DeliverySelector';
 import DeliveryWidget from './components/DeliveryWidget';
-export default { DeliverySelector, DeliveryWidget, DeliveryMethodId };
+import PickupPointSelector from './components/PickupPointSelector';
+export default { DeliverySelector, DeliveryWidget, DeliveryMethodId, PickupPointSelector };

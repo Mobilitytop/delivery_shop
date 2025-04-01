@@ -4784,6 +4784,7 @@ __metadata:
     react: 18.3.1
     react-native: 0.77.1
     react-native-builder-bob: ^0.37.0
+    react-native-select-dropdown: ^4.0.1
     release-it: ^17.10.0
     turbo: ^1.10.7
     typescript: ^5.2.2
@@ -10066,6 +10067,13 @@ __metadata:
   bin:
     bob: bin/bob
   checksum: 854a4ebbdf8b5a8447192d601074415e017b6bca5e973e88c4be434e7b5aa2f829b82bedf47837704d9cafce1ba16ea7187ad920b8eed81a2315b350c707b80f
+  languageName: node
+  linkType: hard
+
+"react-native-select-dropdown@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "react-native-select-dropdown@npm:4.0.1"
+  checksum: 0f841ec81921e4f79959c883a1c83570e60b9fe28bbf075892aec75edf9bfd5506a7d71221fce388bf664a9d863785fc10a87dac3a27a9cdac248da909611ddd
   languageName: node
   linkType: hard
 

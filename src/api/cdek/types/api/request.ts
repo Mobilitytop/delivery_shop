@@ -170,6 +170,7 @@ export type GetPickupPoints = {
   is_handout?: boolean;
   is_reception?: boolean;
   fias_guid?: string;
+  size?:number;
 };
 
 export type GetCities = {

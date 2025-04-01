@@ -441,7 +441,7 @@ const DeliverySelector: React.FC<DeliverySelectorProps> = ({
 
   useEffect(() => {
     fetchDeliveryOptions();
-  }, [fetchDeliveryOptions]);
+  }, []);
 
   const handleSelect = (option: DeliveryOption) => {
     setSelectedId(option.id);

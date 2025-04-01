@@ -1,12 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { DeliveryMethodId } from './types'; // Предполагается, что типы находятся в отдельном файле
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { fetchPostTariff } from '../../api/post';
 import { PostTariffRequest } from '../../api/post/models';
 import { Cdek } from '../../api/cdek';
 import { ApiRequest } from '../../api/cdek/types/api';
 import { Courierist } from '../../api/courierist';
 import { LPost } from '../../api/l-post';
+
+// Перечисление методов доставки
+export enum DeliveryMethodId {
+  POST = 'post',
+  CDEK_DOOR = 'cdek_door',
+  CDEK_POINT = 'cdek_point',
+  CUSTOM = 'custom',
+  COURIERIST = 'courierist',
+  LPOST_COURIER = 'lpost_courier', // Курьерская доставка
+  LPOST_POINT = 'lpost_point',
+}
 
 // Типы данных для опций доставки
 type DeliveryOption = {
@@ -24,6 +34,8 @@ export interface UniversalPackage {
   height?: number; // Высота в см
   declaredValue?: number; // Объявленная ценность в рублях
   dimensionType?: 'S' | 'M' | 'L' | 'XL' | 'OVERSIZED'; // Типоразмер
+  unit?: number; // Единица измерения
+  typeId?: number; // Тип посылки
 }
 
 // Форматы адресов для разных методов доставки
@@ -35,6 +47,12 @@ type PostAddress = {
 type CdekAddress = {
   fromAddress: string;
   toAddress: string;
+  fromCoordinates?: { longitude: number; latitude: number };
+  toCoordinates?: { longitude: number; latitude: number };
+};
+
+type CustomAddress = {
+  customField: string;
 };
 
 type CourieristAddress = {
@@ -51,12 +69,16 @@ type LPostAddress = {
 
 type DeliveryAddress =
   | { method: DeliveryMethodId.POST; data: PostAddress }
-  | { method: DeliveryMethodId.CDEK_DOOR | DeliveryMethodId.CDEK_POINT; data: CdekAddress }
+  | {
+      method: DeliveryMethodId.CDEK_DOOR | DeliveryMethodId.CDEK_POINT;
+      data: CdekAddress;
+    }
+  | { method: DeliveryMethodId.CUSTOM; data: CustomAddress }
   | { method: DeliveryMethodId.COURIERIST; data: CourieristAddress }
   | { method: DeliveryMethodId.LPOST_COURIER; data: LPostAddress }
   | { method: DeliveryMethodId.LPOST_POINT; data: LPostAddress };
 
-type DeliveryWidgetProps = {
+type DeliverySelectorProps = {
   colors?: Colors;
   deliveryMethods: DeliveryAddress[];
   packages: UniversalPackage[];
@@ -69,8 +91,16 @@ type DeliveryWidgetProps = {
     account: string;
     password: string;
     url_base: 'https://api.edu.cdek.ru/v2' | 'https://api.cdek.ru/v2';
-    request: Omit<ApiRequest.CalculatorByTariff, 'tariff_code' | 'to_location' | 'from_location'> &
-      Partial<Pick<ApiRequest.CalculatorByTariff, 'tariff_code' | 'to_location' | 'from_location'>>;
+    request: Omit<
+      ApiRequest.CalculatorByTariff,
+      'tariff_code' | 'to_location' | 'from_location'
+    > &
+      Partial<
+        Pick<
+          ApiRequest.CalculatorByTariff,
+          'tariff_code' | 'to_location' | 'from_location'
+        >
+      >;
   };
   courieristConfig?: {
     login: string;
@@ -80,6 +110,10 @@ type DeliveryWidgetProps = {
     secret: string;
   };
   customOptions?: DeliveryOption[];
+  onSelect?: (option: DeliveryOption) => void;
+  onLoadComplete?: (options: DeliveryOption[]) => void;
+  onError?: (error: Error) => void;
+  initialSelectedId?: string;
 };
 
 // Тип для кастомизации цветов
@@ -88,16 +122,21 @@ type Colors = {
   background?: string;
   border?: string;
   primary?: string;
+  radioBorder?: string; // Цвет обводки радиокнопки
+  radioFill?: string; // Цвет заполнения радиокнопки
 };
 
 // Метод преобразования универсального формата посылки
-const convertPackage = (packages: UniversalPackage[], method: DeliveryMethodId) => {
+const convertPackage = (
+  packages: UniversalPackage[],
+  method: DeliveryMethodId
+) => {
   switch (method) {
     case DeliveryMethodId.POST: {
       const totalMass = packages.reduce((sum, pkg) => sum + pkg.weight, 0);
       const dimensions = packages[0];
       return {
-        mass: totalMass,
+        'mass': totalMass,
         ...(dimensions?.length && dimensions?.width && dimensions?.height
           ? {
               dimension: {
@@ -121,10 +160,19 @@ const convertPackage = (packages: UniversalPackage[], method: DeliveryMethodId) 
           height: pkg.height,
         })),
       };
+    case DeliveryMethodId.CUSTOM:
+      return {
+        cargoes: packages.map((pkg) => ({
+          Weight: pkg.weight,
+          Length: pkg.length || 0,
+          Width: pkg.width || 0,
+          Height: pkg.height || 0,
+        })),
+      };
     case DeliveryMethodId.COURIERIST:
       return {
         shipment: packages.map((pkg) => ({
-          weight: pkg.weight / 1000, // Перевод в кг
+          weight: pkg.weight / 1000,
           length: (pkg.length || 0) + (pkg.width || 0) + (pkg.height || 0),
           unit: 1,
         })),
@@ -140,18 +188,21 @@ const convertPackage = (packages: UniversalPackage[], method: DeliveryMethodId) 
   }
 };
 
-const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
+const DeliverySelector: React.FC<DeliverySelectorProps> = ({
   colors,
   deliveryMethods,
   packages,
   postConfig,
   cdekConfig,
   courieristConfig,
-  lpostConfig,
+  lpostConfig, 
   customOptions = [],
+  onLoadComplete,
+  onError,
 }) => {
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
 
   const CDEKClient = useMemo(
     () =>
@@ -191,7 +242,7 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
       setIsLoading(true);
       const options: DeliveryOption[] = [];
 
-      // Авторизация для сервисов, если используются
+      // Авторизация для всех сервисов, если используются
       if (CourieristClient) await CourieristClient.authenticate();
       if (LPostClient) await LPostClient.authenticate();
 
@@ -199,7 +250,10 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
         switch (method.method) {
           case DeliveryMethodId.POST:
             if (!postConfig) return Promise.resolve(null);
-            const postPackageData = convertPackage(packages, DeliveryMethodId.POST);
+            const postPackageData = convertPackage(
+              packages,
+              DeliveryMethodId.POST
+            );
             return fetchPostTariff({
               accessToken: postConfig.accessToken,
               basicToken: postConfig.basicToken,
@@ -213,7 +267,10 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
 
           case DeliveryMethodId.CDEK_DOOR:
             if (!CDEKClient || !cdekConfig) return Promise.resolve(null);
-            const cdekDoorPackageData = convertPackage(packages, DeliveryMethodId.CDEK_DOOR);
+            const cdekDoorPackageData = convertPackage(
+              packages,
+              DeliveryMethodId.CDEK_DOOR
+            );
             return CDEKClient.calculatorByTariff({
               ...cdekConfig.request,
               tariff_code: 137,
@@ -224,7 +281,10 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
 
           case DeliveryMethodId.CDEK_POINT:
             if (!CDEKClient || !cdekConfig) return Promise.resolve(null);
-            const cdekPointPackageData = convertPackage(packages, DeliveryMethodId.CDEK_POINT);
+            const cdekPointPackageData = convertPackage(
+              packages,
+              DeliveryMethodId.CDEK_POINT
+            );
             return CDEKClient.calculatorByTariff({
               ...cdekConfig.request,
               tariff_code: 136,
@@ -235,33 +295,37 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
 
           case DeliveryMethodId.COURIERIST:
             if (!CourieristClient) return Promise.resolve(null);
-            return CourieristClient.evaluateOrder(method.data, packages).catch(() => null);
+            return CourieristClient.evaluateOrder(method.data, packages).catch(
+              () => null
+            );
 
-          case DeliveryMethodId.LPOST_COURIER:
-            if (!LPostClient || !method.data.latitude || !method.data.longitude)
-              return Promise.resolve(null);
-            const lpostCourierPackageData = convertPackage(packages, DeliveryMethodId.LPOST_COURIER);
-            return LPostClient.getServicesCalc({
-              fromWarehouseId: method.data.fromWarehouseId,
-              latitude: method.data.latitude,
-              longitude: method.data.longitude,
-              weight: lpostCourierPackageData.Weight || 1,
-              value: lpostCourierPackageData.Value || 0,
-              sumPayment: 0,
-              options: { fitting: false, returnDocuments: false },
-            }).catch(() => null);
+            case DeliveryMethodId.LPOST_COURIER:
+              if (!LPostClient || !method.data.latitude || !method.data.longitude) return Promise.resolve(null);
+              const lpostCourierPackageData = convertPackage(packages, DeliveryMethodId.LPOST_COURIER);
+              return LPostClient.getServicesCalc({
+                fromWarehouseId: method.data.fromWarehouseId,
+                latitude: method.data.latitude,
+                longitude: method.data.longitude,
+                weight: lpostCourierPackageData.Weight || 1,
+                value: lpostCourierPackageData.Value || 0,
+                sumPayment: 0,
+                options: { fitting: false, returnDocuments: false },
+              }).catch(() => null);
+    
+            case DeliveryMethodId.LPOST_POINT:
+              if (!LPostClient || !method.data.toPickupPointId) return Promise.resolve(null);
+              const lpostPointPackageData = convertPackage(packages, DeliveryMethodId.LPOST_POINT);
+              return LPostClient.getServicesCalc({
+                fromWarehouseId: method.data.fromWarehouseId,
+                toPickupPointId: method.data.toPickupPointId,
+                weight: lpostPointPackageData.Weight || 1,
+                value: lpostPointPackageData.Value || 0,
+                sumPayment: 0,
+                options: { fitting: false, returnDocuments: false },
+              }).catch(() => null);
 
-          case DeliveryMethodId.LPOST_POINT:
-            if (!LPostClient || !method.data.toPickupPointId) return Promise.resolve(null);
-            const lpostPointPackageData = convertPackage(packages, DeliveryMethodId.LPOST_POINT);
-            return LPostClient.getServicesCalc({
-              fromWarehouseId: method.data.fromWarehouseId,
-              toPickupPointId: method.data.toPickupPointId,
-              weight: lpostPointPackageData.Weight || 1,
-              value: lpostPointPackageData.Value || 0,
-              sumPayment: 0,
-              options: { fitting: false, returnDocuments: false },
-            }).catch(() => null);
+          case DeliveryMethodId.CUSTOM:
+            return Promise.resolve(null);
 
           default:
             return Promise.resolve(null);
@@ -319,36 +383,42 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
             }
             break;
 
-          case DeliveryMethodId.LPOST_COURIER:
-            if (response?.sumCost) {
-              options.push({
-                id: DeliveryMethodId.LPOST_COURIER,
-                title: 'Л-Пост (курьер)',
-                cost: response.sumCost,
-                duration: response.possibleDelivDates?.length
-                  ? `${response.possibleDelivDates[0].intervals[0].timeFrom}-${response.possibleDelivDates[0].intervals[0].timeTo} (${response.possibleDelivDates[0].dateDelive})`
-                  : `${response.dayLogistic} дн.`,
-              });
-            }
-            break;
+            case DeliveryMethodId.LPOST_COURIER:
+              console.log('LPOST_COURIER Response:', response);
+              if (response?.sumCost) {
+                options.push({
+                  id: DeliveryMethodId.LPOST_COURIER,
+                  title: 'Л-Пост (курьер)',
+                  cost: response.sumCost,
+                  duration:`${response.dayLogistic} дн.`,
+                });
+              }
+              break;
+    
+            case DeliveryMethodId.LPOST_POINT:
+              console.log('LPOST_POINT Response:', response);
+              if (response?.sumCost) {
+                options.push({
+                  id: DeliveryMethodId.LPOST_POINT,
+                  title: 'Л-Пост (до ПВЗ)',
+                  cost: response.sumCost,
+                  duration: `${response.dayLogistic} дн.`,
+                });
+              }
+              break;
 
-          case DeliveryMethodId.LPOST_POINT:
-            if (response?.sumCost) {
-              options.push({
-                id: DeliveryMethodId.LPOST_POINT,
-                title: 'Л-Пост (до ПВЗ)',
-                cost: response.sumCost,
-                duration: `${response.dayLogistic} дн.`,
-              });
-            }
+          case DeliveryMethodId.CUSTOM:
             break;
         }
       });
 
-      setDeliveryOptions([...options, ...customOptions]);
+      const filteredOptions = [...options, ...customOptions];
+      setDeliveryOptions(filteredOptions);
+      onLoadComplete?.(filteredOptions);
     } catch (error) {
       console.error('Failed to fetch delivery options:', error);
       setDeliveryOptions([...customOptions]);
+      onError?.(error as Error);
     } finally {
       setIsLoading(false);
     }
@@ -367,7 +437,8 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
 
   useEffect(() => {
     fetchDeliveryOptions();
-  }, [fetchDeliveryOptions]);
+  }, []);
+
 
   const styles = useMemo(
     () =>
@@ -429,4 +500,4 @@ const DeliveryWidget: React.FC<DeliveryWidgetProps> = ({
   );
 };
 
-export default DeliveryWidget;
+export default DeliverySelector;

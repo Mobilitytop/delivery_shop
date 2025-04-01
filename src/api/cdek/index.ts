@@ -214,8 +214,7 @@ export class Cdek extends EventEmitter<ApiWebhook.EventMap> {
     params?: ApiRequest.GetPickupPoints
   ): Promise<ApiResponse.GetPickupPoints[]> {
     return this.rest.get<ApiResponse.GetPickupPoints[]>({
-      url: '/deliverypoints',
-      query: params,
+      url: `/deliverypoints?postal_code=${params?.postal_code}`,
     });
   }
 
