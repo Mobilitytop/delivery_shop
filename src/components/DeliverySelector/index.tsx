@@ -473,7 +473,7 @@ const DeliverySelector: React.FC<DeliverySelectorProps> = ({
           height: 20,
           borderRadius: 10,
           borderWidth: 2,
-          borderColor: '#000',
+          borderColor: colors?.text || '#000',
           justifyContent: 'center',
           alignItems: 'center',
           marginRight: 20,
